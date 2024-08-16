@@ -15,7 +15,7 @@ unyp install python curl pcre2 gperf cmake util-linux libbpf
 
 pip3_bin=(/uny/pkg/python/*/bin/pip3)
 "${pip3_bin[0]}" install --upgrade pip
-"${pip3_bin[0]}" install meson
+"${pip3_bin[0]}" install meson jinja2
 
 ### Getting Variables from files
 UNY_AUTO_PAT="$(cat UNY_AUTO_PAT)"
