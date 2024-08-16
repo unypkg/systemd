@@ -96,12 +96,13 @@ meson setup .. \
     -Dhomed=disabled \
     -Duserdb=false \
     -Dmode=release \
-    -Dpam=enabled \
     -Dpamconfdir=/etc/pam.d \
     -Ddev-kvm-mode=0660 \
     -Dnobody-group=nogroup \
     -Dsysupdate=disabled \
     -Dukify=disabled
+
+#    -Dpam=enabled \
 
 ninja
 ninja install
