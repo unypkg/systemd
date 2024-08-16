@@ -11,11 +11,11 @@ set -vx
 wget -qO- uny.nu/pkg | bash -s buildsys
 
 ### Installing build dependencies
-#unyp install python expat openssl
+unyp install python curl pcre2
 
-#pip3_bin=(/uny/pkg/python/*/bin/pip3)
-#"${pip3_bin[0]}" install --upgrade pip
-#"${pip3_bin[0]}" install docutils pygments
+pip3_bin=(/uny/pkg/python/*/bin/pip3)
+"${pip3_bin[0]}" install --upgrade pip
+"${pip3_bin[0]}" install meson
 
 ### Getting Variables from files
 UNY_AUTO_PAT="$(cat UNY_AUTO_PAT)"
@@ -77,12 +77,34 @@ get_include_paths
 
 unset LD_RUN_PATH
 
-./configure \
-    --prefix=/uny/pkg/"$pkgname"/"$pkgver"
+sed -i -e 's/GROUP="render"/GROUP="video"/' \
+    -e 's/GROUP="sgx", //' rules.d/50-udev-default.rules.in
 
-make -j"$(nproc)"
-make -j"$(nproc)" check 
-make -j"$(nproc)" install
+mkdir build
+cd build || exit
+
+meson setup .. \
+    --prefix=/uny/pkg/"$pkgname"/"$pkgver" \
+    --buildtype=release \
+    -Ddefault-dnssec=no \
+    -Dfirstboot=false \
+    -Dinstall-tests=false \
+    -Dldconfig=false \
+    -Dman=auto \
+    -Dsysusers=false \
+    -Drpmmacrosdir=no \
+    -Dhomed=disabled \
+    -Duserdb=false \
+    -Dmode=release \
+    -Dpam=enabled \
+    -Dpamconfdir=/etc/pam.d \
+    -Ddev-kvm-mode=0660 \
+    -Dnobody-group=nogroup \
+    -Dsysupdate=disabled \
+    -Dukify=disabled
+
+ninja
+ninja install
 
 ####################################################
 ### End of individual build script
